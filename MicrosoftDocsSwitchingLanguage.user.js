@@ -5,13 +5,12 @@
 // @description         switch Chinese/English language in Microsoft docs websites.
 // @description:zh-CN   在微软文档中切换中文 / 英文
 // @description:zh-TW   在微軟文檔中切換中文 / 英文
-// @version             1.1
-
 // @author              dangoron
 // @contributor         ladit
+// @version             1.1.1
 // @namespace           https://greasyfork.org/zh-CN/scripts/33209
-// @homepageURL         https://github.com/ladit/MicrosoftDocsSwitchingLanguage
-// @supportURL          https://github.com/ladit/MicrosoftDocsSwitchingLanguage
+// @homepageURL         https://github.com/ladit/Userscripts
+// @supportURL          https://github.com/ladit/Userscripts
 // @grant               none
 
 // @match               http*://msdn.microsoft.com/en-us/*

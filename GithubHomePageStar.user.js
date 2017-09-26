@@ -3,12 +3,15 @@
 // @description         Show the latest 30 starred repos in Github home page.
 // @description:zh-CN   在 Github 首页显示最近的 30 个 star 项目，部分参考自 zhihaofans 的 https://greasyfork.org/zh-CN/scripts/25101
 // @description:zh-TW   在 Github 首頁顯示最近的 30 個 star 項目，部分參考自 zhihaofans 的 https://greasyfork.org/zh-CN/scripts/25101
-// @namespace           https://greasyfork.org/zh-CN/scripts/33511
-// @version             0.1
 // @author              ladit
-// @match               https://github.com/
-// @require             https://cdn.bootcss.com/jquery/1.9.1/jquery.min.js
+// @version             1.0.1
+// @namespace           https://greasyfork.org/zh-CN/scripts/33511
+// @homepageURL         https://github.com/ladit/Userscripts
+// @supportURL          https://github.com/ladit/Userscripts
 // @grant               none
+
+// @require             https://cdn.bootcss.com/jquery/1.9.1/jquery.min.js
+// @match               https://github.com/
 // ==/UserScript==
 
 function getStarredList(userName) {
