@@ -4,7 +4,7 @@
 // @description:zh-CN   在 Github 首页显示最近的 30 个 star 项目，部分参考自 zhihaofans 的 https://greasyfork.org/zh-CN/scripts/25101
 // @description:zh-TW   在 Github 首頁顯示最近的 30 個 star 項目，部分參考自 zhihaofans 的 https://greasyfork.org/zh-CN/scripts/25101
 // @author              ladit
-// @version             1.0.1
+// @version             1.0.2
 // @namespace           https://greasyfork.org/zh-CN/scripts/33511
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
@@ -38,7 +38,7 @@ $(document).ready(function () {
   if ($("meta.js-ga-set").attr('content') == "Logged In") {
     var userName = $("meta[name='user-login']").attr('content');
     if (window.localStorage) {
-      if (!localStorage.getItem('lastStoreStarredReposTime') || localStorage.getItem('lastStoreStarredReposTime') + 86400000 < $.now()) {
+      if (!localStorage.getItem('lastStoreStarredReposTime') || Number(localStorage.getItem('lastStoreStarredReposTime')) + 86400000 < $.now()) {
         var starredReposBlock = getStarredList(userName);
         localStorage.setItem('starredReposBlock', starredReposBlock);
         $(".dashboard-sidebar.column.one-third").append(starredReposBlock);
