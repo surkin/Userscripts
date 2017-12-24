@@ -7,7 +7,7 @@
 // @description:zh-TW   在微軟文檔中切換中文 / 英文
 // @author              dangoron
 // @contributor         ladit
-// @version             1.1.2
+// @version             1.2.0
 // @namespace           https://greasyfork.org/zh-CN/scripts/33209
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
@@ -19,18 +19,12 @@
 // @match               http*://docs.microsoft.com/zh-cn/*
 // ==/UserScript==
 
-var switcher = document.createElement('span');
-switcher.style.cssText = 'opacity: 0.5; color: black; cursor: pointer;position: fixed;bottom: 80%;left: 24%;z-index: 9999;';
-switcher.innerHTML = '中文 / English 切换';
+var switcher = document.createElement('li');
+switcher.innerHTML = '<a href="#">中文 / English 切换</a>';
+var actionList = document.querySelector('.action-list');
+actionList.insertBefore(switcher, actionList.firstElementChild);
 
-switcher.addEventListener('mouseover', function () {
-  switcher.style.opacity = 1;
-}, false);
-switcher.addEventListener('mouseout', function () {
-  switcher.style.opacity = 0.3;
-}, false);
-
-switcher.addEventListener('click', function () {
+switcher.firstElementChild.addEventListener('click', function () {
   if (document.URL.search(/\/en-us\//) != -1) {
     window.location.replace(location.href.replace(/\/en-us\//, '\/zh-cn\/'));
   }
@@ -38,5 +32,3 @@ switcher.addEventListener('click', function () {
     window.location.replace(location.href.replace(/\/zh-cn\//, '\/en-us\/'));
   }
 }, false);
-
-document.body.appendChild(switcher);
