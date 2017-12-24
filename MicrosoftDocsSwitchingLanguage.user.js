@@ -7,7 +7,7 @@
 // @description:zh-TW   在微軟文檔中切換中文 / 英文
 // @author              dangoron
 // @contributor         ladit
-// @version             1.1.1
+// @version             1.1.2
 // @namespace           https://greasyfork.org/zh-CN/scripts/33209
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
@@ -32,10 +32,10 @@ switcher.addEventListener('mouseout', function () {
 
 switcher.addEventListener('click', function () {
   if (document.URL.search(/\/en-us\//) != -1) {
-    window.location.replace(url.replace(/\/en-us\//, '\/zh-cn\/'));
+    window.location.replace(location.href.replace(/\/en-us\//, '\/zh-cn\/'));
   }
   if (document.URL.search(/\/zh-cn\//) != -1) {
-    window.location.replace(url.replace(/\/zh-cn\//, '\/en-us\/'));
+    window.location.replace(location.href.replace(/\/zh-cn\//, '\/en-us\/'));
   }
 }, false);
 
