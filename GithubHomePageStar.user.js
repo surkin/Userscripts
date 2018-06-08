@@ -4,7 +4,7 @@
 // @description:zh-CN   在 Github 首页显示最近的 30 个 star 项目，部分参考自 zhihaofans 的 https://greasyfork.org/zh-CN/scripts/25101
 // @description:zh-TW   在 Github 首頁顯示最近的 30 個 star 項目，部分參考自 zhihaofans 的 https://greasyfork.org/zh-CN/scripts/25101
 // @author              ladit
-// @version             1.0.2
+// @version             1.0.3
 // @namespace           https://greasyfork.org/zh-CN/scripts/33511
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
@@ -17,37 +17,36 @@
 function getStarredList(userName) {
   var itemsList = '';
   var item = '';
-  $.getJSON("https://api.github.com/users/" + userName + "/starred", function (starredRepos) {
-    var starredReposCount = starredRepos.length;
+  $.getJSON('https://api.github.com/users/' + userName + '/starred', function (starredRepos) {
     var isPublic = '';
     $.each(starredRepos, function (key, starredRepo) {
       if (starredRepo.private === true) {
-        isPublic = "private";
+        isPublic = 'private';
       } else {
         isPublic = 'public';
       }
-      item = '<li class="' + isPublic + ' source"><a href="/' + starredRepo.full_name + '" class="mini-repo-list-item css-truncate" data-ga-click="Dashboard, click, Popular repos list item - context:user visibility:public fork:false"><svg aria-label="Repository" class="octicon octicon-repo repo-icon" height="16" role="img" version="1.1" viewBox="0 0 12 16" width="12"><path fill-rule="evenodd" d="M4 9H3V8h1v1zm0-3H3v1h1V6zm0-2H3v1h1V4zm0-2H3v1h1V2zm8-1v12c0 .55-.45 1-1 1H6v2l-1.5-1.5L3 16v-2H1c-.55 0-1-.45-1-1V1c0-.55.45-1 1-1h10c.55 0 1 .45 1 1zm-1 10H1v2h2v-1h3v1h5v-2zm0-10H2v9h9V1z"/></svg><span class="repo-and-owner css-truncate-target"><span class="owner css-truncate-target" title="' + starredRepo.owner.login + '">' + starredRepo.owner.login + '</span>/<span class="repo" title="' + starredRepo.name + '">' + starredRepo.name + '</span></span><span class="stars">' + starredRepo.stargazers_count + ' <svg aria-label="stars" class="octicon octicon-star" height="16" role="img" version="1.1" viewBox="0 0 14 16" width="14"><path fill-rule="evenodd" d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span></a></li>';
+      item = '<li class="' + isPublic + ' source "><a class="d-flex flex-items-baseline flex-items-center f5 mb-2" href="' + starredRepo.full_name + '"><div class="text-gray-light mr-2"><svg aria-label="Repository" class="octicon octicon-repo" viewBox="0 0 12 16" version="1.1" width="12" height="16" role="img"><path fill-rule="evenodd" d="M4 9H3V8h1v1zm0-3H3v1h1V6zm0-2H3v1h1V4zm0-2H3v1h1V2zm8-1v12c0 .55-.45 1-1 1H6v2l-1.5-1.5L3 16v-2H1c-.55 0-1-.45-1-1V1c0-.55.45-1 1-1h10c.55 0 1 .45 1 1zm-1 10H1v2h2v-1h3v1h5v-2zm0-10H2v9h9V1z"></path></svg></div><div class="width-full text-bold"><span class="css-truncate css-truncate-target" style="max-width: 100%" title="' + starredRepo.owner.login + '">' + starredRepo.owner.login + '</span>/<span class="css-truncate css-truncate-target" style="max-width: 100%" title="' + starredRepo.name + '">' + starredRepo.name + '</span></div></a></li>';
       itemsList += item;
     });
   });
-  return '<div id="your_stars" class="boxed-group flush js-repos-container" data-pjax-container role="navigation"><div class="boxed-group-action"><a href="/' + userName + '?tab=stars" class="btn btn-sm btn-primary" data-ga-click="Dashboard, click, Sidebar header new repo button - context:user">All stars</a></div><h3>Recent 30 starred repos</h3><div class="boxed-group-inner"><ul class="mini-repo-list">' + itemsList + '</ul></div></div>';    
+  return '<div id="your_stars" class="Box Box--condensed mb-3 Details js-repos-container" data-pjax-container="" role="navigation"><div class="Box-header"><h3 class="Box-title d-flex flex-justify-between flex-items-center">Recent starred repos<a class="btn btn-sm btn-primary text-white" href="/' + userName + '?tab=stars">All stars</a></h3></div><div class="Box-body"><ul class="list-style-none pr-3" data-filterable-for="dashboard-repos-filter" data-filterable-type="substring">' + itemsList + '</ul></div></div>';
 }
 
 $(document).ready(function () {
   $.ajaxSettings.async = false;
-  if ($("meta.js-ga-set").attr('content') == "Logged In") {
-    var userName = $("meta[name='user-login']").attr('content');
+  if ($('meta.js-ga-set').attr('content') == 'Logged In') {
+    var userName = $('meta[name="user-login"]').attr('content');
     if (window.localStorage) {
       if (!localStorage.getItem('lastStoreStarredReposTime') || Number(localStorage.getItem('lastStoreStarredReposTime')) + 86400000 < $.now()) {
         var starredReposBlock = getStarredList(userName);
         localStorage.setItem('starredReposBlock', starredReposBlock);
-        $(".dashboard-sidebar.column.one-third").append(starredReposBlock);
+        $('.dashboard-sidebar.column.one-third.pr-5.pt-3').append(starredReposBlock);
         localStorage.setItem('lastStoreStarredReposTime', $.now());
       } else {
-        $(".dashboard-sidebar.column.one-third").append(localStorage.getItem('starredReposBlock'));
+        $('.dashboard-sidebar.column.one-third.pr-5.pt-3').append(localStorage.getItem('starredReposBlock'));
       }
     } else {
-      $(".dashboard-sidebar.column.one-third").append(getStarredList(userName));
+      $('.dashboard-sidebar.column.one-third.pr-5.pt-3').append(getStarredList(userName));
     }
   }
   $.ajaxSettings.async = true;
