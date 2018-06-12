@@ -3,8 +3,8 @@
 // @description         Auto click Usercloud download button.
 // @description:zh-CN   自动点击 Usercloud 的下载按钮
 // @author              ladit
-// @version             1.0.0
-// @namespace           https://greasyfork.org/zh-CN/scripts/
+// @version             1.0.1
+// @namespace           https://greasyfork.org/zh-CN/scripts/369454
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
 // @grant               none
