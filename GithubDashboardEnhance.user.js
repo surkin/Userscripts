@@ -4,7 +4,7 @@
 // @description:zh-CN   在 Github 新首页显示最近 30 个 star 项目，在头部导航栏中显示快捷方式
 // @description:zh-TW   在 Github 新首頁顯示最近 30 個 star 項目，在頭部導航欄中顯示快捷方式
 // @author              ladit
-// @version             1.0.4
+// @version             1.0.5
 // @namespace           https://greasyfork.org/zh-CN/scripts/33511
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
@@ -17,7 +17,7 @@
 
 let userName = document.querySelector('meta[name="user-login"]').content;
 if (userName != '') {
-  document.querySelector('ul[role="navigation"]').insertAdjacentHTML('beforeEnd', '<li><a class="js-selected-navigation-item HeaderNavlink pl-lg-4 px-lg-2 py-2 py-lg-0" href="/' + userName + '">Profile</a></li><li><a class="js-selected-navigation-item HeaderNavlink px-lg-2 py-2 py-lg-0" href="/' + userName + '?tab=repositories">Repositories</a></li><li><a class="js-selected-navigation-item HeaderNavlink px-lg-2 py-2 py-lg-0" href="/' + userName + '?tab=stars">Stars</a></li><li><a class="js-selected-navigation-item HeaderNavlink px-lg-2 py-2 py-lg-0" href="https://gist.github.com/">Gists</a></li>');
+  document.querySelector('ul.d-lg-flex.pl-lg-2.flex-items-center.text-bold.list-style-none').insertAdjacentHTML('beforeEnd', '<li><a class="js-selected-navigation-item HeaderNavlink pl-lg-4 px-lg-2 py-2 py-lg-0" href="/' + userName + '">Profile</a></li><li><a class="js-selected-navigation-item HeaderNavlink px-lg-2 py-2 py-lg-0" href="/' + userName + '?tab=repositories">Repositories</a></li><li><a class="js-selected-navigation-item HeaderNavlink px-lg-2 py-2 py-lg-0" href="/' + userName + '?tab=stars">Stars</a></li><li><a class="js-selected-navigation-item HeaderNavlink px-lg-2 py-2 py-lg-0" href="https://gist.github.com/">Gists</a></li>');
   if (!localStorage.getItem('lastStoreStarredReposTime') || Number(localStorage.getItem('lastStoreStarredReposTime')) + 86400000 < Date.now()) {
     var httpRequest = new XMLHttpRequest();
     httpRequest.onreadystatechange = function() {
