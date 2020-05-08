@@ -4,7 +4,7 @@
 // @description:zh-CN   在 Github 新首页显示最近 30 个 star 项目，在头部导航栏中显示快捷方式
 // @description:zh-TW   在 Github 新首頁顯示最近 30 個 star 項目，在頭部導航欄中顯示快捷方式
 // @author              ladit
-// @version             1.0.8
+// @version             1.0.9
 // @namespace           https://greasyfork.org/zh-CN/scripts/33511
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
@@ -19,7 +19,7 @@
 
 var userName = document.querySelector('meta[name="user-login"]').content;
 if (userName != '') {
-  document.querySelector('nav[aria-label="Global"]').insertAdjacentHTML('beforeEnd', '<a class="js-selected-navigation-item Header-link  ml-lg-4 mr-0 mr-lg-3 py-2 py-lg-0 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g m" href="/' + userName + '">Profile</a><a class="js-selected-navigation-item Header-link  mr-0 mr-lg-3 py-2 py-lg-0 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g r" href="/' + userName + '?tab=repositories">Repositories</a><a class="js-selected-navigation-item Header-link  mr-0 mr-lg-3 py-2 py-lg-0 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g s" href="/' + userName + '?tab=stars">Stars</a><a class="js-selected-navigation-item Header-link  mr-0 mr-lg-3 py-2 py-lg-0 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g g" href="https://gist.github.com/">Gists</a>');
+  document.querySelector('nav[aria-label="Global"]').insertAdjacentHTML('beforeEnd', '<a class="js-selected-navigation-item Header-link py-lg-3  ml-lg-4 mr-0 mr-lg-3 py-2 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g m" href="/' + userName + '">Profile</a><a class="js-selected-navigation-item Header-link py-lg-3  mr-0 mr-lg-3 py-2 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g r" href="/' + userName + '?tab=repositories">Repositories</a><a class="js-selected-navigation-item Header-link py-lg-3  mr-0 mr-lg-3 py-2 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g s" href="/' + userName + '?tab=stars">Stars</a><a class="js-selected-navigation-item Header-link py-lg-3  mr-0 mr-lg-3 py-2 border-top border-lg-top-0 border-white-fade-15" data-hotkey="g g" href="https://gist.github.com/">Gists</a>');
   var rightColumn = document.querySelector('aside[aria-label="Explore"]');
   if (rightColumn != null && GM_getValue('lastStoreStarredReposTime', 0) + 86400000 < Date.now()) {
     GM_xmlhttpRequest({

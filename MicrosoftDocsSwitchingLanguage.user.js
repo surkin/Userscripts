@@ -7,7 +7,7 @@
 // @description:zh-TW   在微軟文檔中切換中文 / 英文
 // @author              dangoron
 // @contributor         ladit
-// @version             1.2.0
+// @version             1.2.1
 // @namespace           https://greasyfork.org/zh-CN/scripts/33209
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 var switcher = document.createElement('li');
-switcher.innerHTML = '<a href="#">中文 / English 切换</a>';
+switcher.innerHTML = '<button type="button" class="button is-text has-inner-focus is-small is-icon-only-touch" title="Switch between English and Chinese" aria-pressed="false"><span class="is-visually-hidden-touch is-hidden-portrait">中文 / English</span></button>';
 var actionList = document.querySelector('.action-list');
 actionList.insertBefore(switcher, actionList.firstElementChild);
 
