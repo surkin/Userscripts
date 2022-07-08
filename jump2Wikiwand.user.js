@@ -14,5 +14,10 @@
 // @run-at              document-start
 // ==/UserScript==
 
-window.location.replace(document.URL.replace(/https?:\/\/([\w-]+)\.wikipedia\.org\/[\w-]+\/([^#&\?]+)/, 'https://www.wikiwand.com/$1/$2'));
+(function() {
+    'use strict';
+    if (!document.URL.includes('oldformat=true')) {
+      window.location.replace(document.URL.replace(/https?:\/\/([\w-]+)\.wikipedia\.org\/[\w-]+\/([^#&\?]+)/, 'https://www.wikiwand.com/$1/$2'));
+    }
+})();
 
