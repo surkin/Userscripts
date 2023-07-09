@@ -4,56 +4,100 @@
 // @description:zh-CN   在 Github 新首页显示最近 30 个 star 项目，在头部导航栏中显示快捷方式
 // @description:zh-TW   在 Github 新首頁顯示最近 30 個 star 項目，在頭部導航欄中顯示快捷方式
 // @author              ladit
-// @version             1.1.1
+// @version             1.1.2
 // @namespace           https://greasyfork.org/zh-CN/scripts/33511
 // @homepageURL         https://github.com/ladit/Userscripts
 // @supportURL          https://github.com/ladit/Userscripts
-// @note                Partial reference from https://greasyfork.org/zh-CN/scripts/25101 by zhihaofans
-// @note                Opt in new dashboard before using this script
-// @grant               GM_xmlhttpRequest
-// @grant               GM_setValue
-// @grant               GM_getValue
+
+// @grant               GM.setValue
+// @grant               GM.getValue
+// @grant               GM.xmlHttpRequest
 // @run-at              document-idle
 // @include             https://github.com/*
 // @connect             api.github.com
 // ==/UserScript==
 
-function run() {
-    var userName = document.querySelector('meta[name="user-login"]').content;
+(async () => {
+    let userName = document.querySelector('meta[name="user-login"]').getAttribute('content')
     if (userName === '') {
         return;
     }
-    document.querySelector('nav[aria-label="Global"] a[href="/explore"]').insertAdjacentHTML('afterend', '<a class="js-selected-navigation-item Header-link mt-md-n3 mb-md-n3 py-2 py-md-3 mr-0 mr-md-3 border-top border-md-top-0 border-white-fade-15" href="/' + userName + '">Profile</a><a class="js-selected-navigation-item Header-link mt-md-n3 mb-md-n3 py-2 py-md-3 mr-0 mr-md-3 border-top border-md-top-0 border-white-fade-15" href="/' + userName + '?tab=repositories">Repositories</a><a class="js-selected-navigation-item Header-link mt-md-n3 mb-md-n3 py-2 py-md-3 mr-0 mr-md-3 border-top border-md-top-0 border-white-fade-15" href="/' + userName + '?tab=stars">Stars</a><a class="js-selected-navigation-item Header-link mt-md-n3 mb-md-n3 py-2 py-md-3 mr-0 mr-md-3 border-top border-md-top-0 border-white-fade-15" href="https://gist.github.com/">Gists</a>');
-    var rightColumn = document.querySelector('aside[aria-label="Explore"]');
-    if (rightColumn == null) {
+    const actionMenu = document.querySelector('.AppHeader-actions > action-menu')
+    if (actionMenu) {
+        actionMenu.insertAdjacentHTML('afterend', `<div data-view-component="true" class="Button-withTooltip"> <a href="https://github.com/${userName}" id="item-profile-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-profile-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-person"> <path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"> </path> </svg> </a> <tool-tip id="tooltip-profile-button" for="item-profile-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Profile</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="https://github.com/${userName}?tab=repositories&type=source" id="item-repositories-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-repositories-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-repo"> <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"> </path> </svg> </a> <tool-tip id="tooltip-repositories-button" for="item-repositories-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Repositories</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="/${userName}?tab=projects" id="item-projects-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-projects-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-project"> <path d="M1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25V1.75C0 .784.784 0 1.75 0ZM1.5 1.75v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25ZM11.75 3a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75Zm-8.25.75a.75.75 0 0 1 1.5 0v5.5a.75.75 0 0 1-1.5 0ZM8 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 3Z"> </path> </svg> </a> <tool-tip id="tooltip-projects-button" for="item-projects-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Projects</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="/codespaces" id="item-codespaces-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-codespaces-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-codespaces"> <path d="M0 11.25c0-.966.784-1.75 1.75-1.75h12.5c.966 0 1.75.784 1.75 1.75v3A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm2-9.5C2 .784 2.784 0 3.75 0h8.5C13.216 0 14 .784 14 1.75v5a1.75 1.75 0 0 1-1.75 1.75h-8.5A1.75 1.75 0 0 1 2 6.75Zm1.75-.25a.25.25 0 0 0-.25.25v5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-5a.25.25 0 0 0-.25-.25Zm-2 9.5a.25.25 0 0 0-.25.25v3c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-3a.25.25 0 0 0-.25-.25Z"> </path> <path d="M7 12.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm-4 0a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Z"> </path> </svg> </a> <tool-tip id="tooltip-codespaces-button" for="item-codespaces-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Codespaces</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="/settings/organizations" id="item-organizations-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-organizations-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-organization"> <path d="M1.75 16A1.75 1.75 0 0 1 0 14.25V1.75C0 .784.784 0 1.75 0h8.5C11.216 0 12 .784 12 1.75v12.5c0 .085-.006.168-.018.25h2.268a.25.25 0 0 0 .25-.25V8.285a.25.25 0 0 0-.111-.208l-1.055-.703a.749.749 0 1 1 .832-1.248l1.055.703c.487.325.779.871.779 1.456v5.965A1.75 1.75 0 0 1 14.25 16h-3.5a.766.766 0 0 1-.197-.026c-.099.017-.2.026-.303.026h-3a.75.75 0 0 1-.75-.75V14h-1v1.25a.75.75 0 0 1-.75.75Zm-.25-1.75c0 .138.112.25.25.25H4v-1.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 .75.75v1.25h2.25a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25ZM3.75 6h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM3 3.75A.75.75 0 0 1 3.75 3h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 3.75Zm4 3A.75.75 0 0 1 7.75 6h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 7 6.75ZM7.75 3h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM3 9.75A.75.75 0 0 1 3.75 9h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 9.75ZM7.75 9h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5Z"> </path> </svg> </a> <tool-tip id="tooltip-organizations-button" for="item-organizations-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Organizations</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="/${userName}?tab=stars" id="item-stars-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-stars-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-star"> <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"> </path> </svg> </a> <tool-tip id="tooltip-stars-button" for="item-stars-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Stars</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="/sponsors/accounts" id="item-sponsors-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-sponsors-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-heart"> <path d="m8 14.25.345.666a.75.75 0 0 1-.69 0l-.008-.004-.018-.01a7.152 7.152 0 0 1-.31-.17 22.055 22.055 0 0 1-3.434-2.414C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.045 5.231-3.885 6.818a22.066 22.066 0 0 1-3.744 2.584l-.018.01-.006.003h-.002ZM4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.58 20.58 0 0 0 8 13.393a20.58 20.58 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.749.749 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"> </path> </svg> </a> <tool-tip id="tooltip-sponsors-button" for="item-sponsors-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Sponsors</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="https://gist.github.com/mine" id="item-gist-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-gist-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-code-square"> <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm7.47 3.97a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L10.69 8 9.22 6.53a.75.75 0 0 1 0-1.06ZM6.78 6.53 5.31 8l1.47 1.47a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215l-2-2a.75.75 0 0 1 0-1.06l2-2a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"> </path> </svg> </a> <tool-tip id="tooltip-gist-button" for="item-gist-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Gists</tool-tip></div><div data-view-component="true" class="Button-withTooltip"> <a href="https://docs.github.com" id="item-docs-button" data-view-component="true" class="Button Button--iconOnly Button--secondary Button--medium AppHeader-button color-fg-muted rgh-seen--7567559453" aria-labelledby="tooltip-docs-button"> <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-book"> <path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"> </path> </svg> </a> <tool-tip id="tooltip-docs-button" for="item-docs-button" data-direction="s" data-type="label" data-view-component="true" class="position-absolute sr-only" aria-hidden="true" role="tooltip">Docs</tool-tip></div>`)
+    }
+
+    const rightFooter = document.querySelector('div[aria-label="Explore repositories"] > .footer')
+    if (!rightFooter) {
         return;
     }
-    if (GM_getValue('lastStoreStarredReposTime', 0) + 86400000 < Date.now()) {
-        GM_xmlhttpRequest({
-            url: 'https://api.github.com/users/' + userName + '/starred',
-            method: 'GET',
-            timeout: 45e3,
-            onload: function (response) {
-                var starredReposBlock = '<h2 class="f5 text-bold mb-1">Recent starred repos</h2>';
-                var languageColor = { "1C Enterprise": "#814CCC", "ABAP": "#E8274B", "ActionScript": "#882B0F", "Ada": "#02f88c", "Agda": "#315665", "AGS Script": "#B9D9FF", "AL Code": "#3AA2B5", "Alloy": "#64C800", "AMPL": "#E6EFBB", "AngelScript": "#C7D7DC", "ANTLR": "#9DC3FF", "Apex": "#1797c0", "API Blueprint": "#2ACCA8", "APL": "#5A8164", "AppleScript": "#101F1F", "Arc": "#aa2afe", "ASP.NET": "#9400ff", "AspectJ": "#a957b0", "Assembly": "#6E4C13", "Asymptote": "#ff0000", "ATS": "#1ac620", "AutoHotkey": "#6594b9", "AutoIt": "#1C3552", "Ballerina": "#FF5000", "Batchfile": "#C1F12E", "Blade": "#f7523f", "BlitzMax": "#cd6400", "Boo": "#d4bec1", "Brainfuck": "#2F2530", "C": "#555555", "C#": "#178600", "C++": "#f34b7d", "Ceylon": "#dfa535", "Chapel": "#8dc63f", "Cirru": "#ccccff", "Clarion": "#db901e", "Classic ASP": "#6a40fd", "Clean": "#3F85AF", "Click": "#E4E6F3", "Clojure": "#db5855", "CoffeeScript": "#244776", "ColdFusion": "#ed2cd6", "Common Lisp": "#3fb68b", "Common Workflow Language": "#B5314C", "Component Pascal": "#B0CE4E", "Crystal": "#000100", "CSON": "#244776", "CSS": "#563d7c", "Cuda": "#3A4E3A", "D": "#ba595e", "Dafny": "#FFEC25", "Dart": "#00B4AB", "DataWeave": "#003a52", "Dhall": "#dfafff", "DM": "#447265", "Dockerfile": "#384d54", "Dogescript": "#cca760", "Dylan": "#6c616e", "E": "#ccce35", "eC": "#913960", "ECL": "#8a1267", "Eiffel": "#4d6977", "Elixir": "#6e4a7e", "Elm": "#60B5CC", "Emacs Lisp": "#c065db", "EmberScript": "#FFF4F3", "EQ": "#a78649", "Erlang": "#B83998", "F#": "#b845fc", "F*": "#572e30", "Factor": "#636746", "Fancy": "#7b9db4", "Fantom": "#14253c", "Faust": "#c37240", "FLUX": "#88ccff", "Forth": "#341708", "Fortran": "#4d41b1", "FreeMarker": "#0050b2", "Frege": "#00cafe", "Futhark": "#5f021f", "G-code": "#D08CF2", "Game Maker Language": "#71b417", "GAML": "#FFC766", "GDScript": "#355570", "Genie": "#fb855d", "Gherkin": "#5B2063", "Glyph": "#c1ac7f", "Gnuplot": "#f0a9f0", "Go": "#00ADD8", "Golo": "#88562A", "Gosu": "#82937f", "Grammatical Framework": "#ff0000", "Groovy": "#e69f56", "Hack": "#878787", "Haml": "#ece2a9", "Handlebars": "#f7931e", "Harbour": "#0e60e3", "Haskell": "#5e5086", "Haxe": "#df7900", "HiveQL": "#dce200", "HolyC": "#ffefaf", "HTML": "#e34c26", "Hy": "#7790B2", "IDL": "#a3522f", "Idris": "#b30000", "IGOR Pro": "#0000cc", "Io": "#a9188d", "Ioke": "#078193", "Isabelle": "#FEFE00", "J": "#9EEDFF", "Java": "#b07219", "JavaScript": "#f1e05a", "Jolie": "#843179", "JSONiq": "#40d47e", "Jsonnet": "#0064bd", "Julia": "#a270ba", "Jupyter Notebook": "#DA5B0B", "Kaitai Struct": "#773b37", "Kotlin": "#F18E33", "KRL": "#28430A", "Lasso": "#999999", "Latte": "#f2a542", "Less": "#1d365d", "Lex": "#DBCA00", "LFE": "#4C3023", "LiveScript": "#499886", "LLVM": "#185619", "LOLCODE": "#cc9900", "LookML": "#652B81", "LSL": "#3d9970", "Lua": "#000080", "Macaulay2": "#d8ffff", "Makefile": "#427819", "Markdown": "#083fa1", "Marko": "#42bff2", "Mask": "#f97732", "MATLAB": "#e16737", "Max": "#c4a79c", "MAXScript": "#00a6a6", "mcfunction": "#E22837", "Mercury": "#ff2b2b", "Meson": "#007800", "Metal": "#8f14e9", "Mirah": "#c7a938", "mIRC Script": "#3d57c3", "MLIR": "#5EC8DB", "Modula-3": "#223388", "MQL4": "#62A8D6", "MQL5": "#4A76B8", "MTML": "#b7e1f4", "NCL": "#28431f", "Nearley": "#990000", "Nemerle": "#3d3c6e", "nesC": "#94B0C7", "NetLinx": "#0aa0ff", "NetLinx+ERB": "#747faa", "NetLogo": "#ff6375", "NewLisp": "#87AED7", "Nextflow": "#3ac486", "Nim": "#ffc200", "Nit": "#009917", "Nix": "#7e7eff", "Nu": "#c9df40", "Objective-C": "#438eff", "Objective-C++": "#6866fb", "Objective-J": "#ff0c5a", "ObjectScript": "#424893", "OCaml": "#3be133", "Odin": "#60AFFE", "Omgrofl": "#cabbff", "ooc": "#b0b77e", "Opal": "#f7ede0", "OpenQASM": "#AA70FF", "Oxygene": "#cdd0e3", "Oz": "#fab738", "P4": "#7055b5", "Pan": "#cc0000", "Papyrus": "#6600cc", "Parrot": "#f3ca0a", "Pascal": "#E3F171", "Pawn": "#dbb284", "Pep8": "#C76F5B", "Perl": "#0298c3", "PHP": "#4F5D95", "PigLatin": "#fcd7de", "Pike": "#005390", "PLSQL": "#dad8d8", "PogoScript": "#d80074", "PostScript": "#da291c", "PowerBuilder": "#8f0f8d", "PowerShell": "#012456", "Prisma": "#0c344b", "Processing": "#0096D8", "Prolog": "#74283c", "Propeller Spin": "#7fa2a7", "Pug": "#a86454", "Puppet": "#302B6D", "PureBasic": "#5a6986", "PureScript": "#1D222D", "Python": "#3572A5", "q": "#0040cd", "Q#": "#fed659", "QML": "#44a51c", "Qt Script": "#00b841", "Quake": "#882233", "R": "#198CE7", "Racket": "#3c5caa", "Ragel": "#9d5200", "Raku": "#0000fb", "RAML": "#77d9fb", "Rascal": "#fffaa0", "Reason": "#ff5847", "Rebol": "#358a5b", "Red": "#f50000", "Ren'Py": "#ff7f7f", "Ring": "#2D54CB", "Riot": "#A71E49", "Roff": "#ecdebe", "Rouge": "#cc0088", "Ruby": "#701516", "RUNOFF": "#665a4e", "Rust": "#dea584", "SaltStack": "#646464", "SAS": "#B34936", "Sass": "#a53b70", "Scala": "#c22d40", "Scheme": "#1e4aec", "SCSS": "#c6538c", "sed": "#64b970", "Self": "#0579aa", "Shell": "#89e051", "Shen": "#120F14", "Slash": "#007eff", "Slice": "#003fa2", "Slim": "#2b2b2b", "Smalltalk": "#596706", "SmPL": "#c94949", "Solidity": "#AA6746", "SourcePawn": "#f69e1d", "SQF": "#3F3F3F", "Squirrel": "#800000", "SRecode Template": "#348a34", "Stan": "#b2011d", "Standard ML": "#dc566d", "Starlark": "#76d275", "Stylus": "#ff6347", "SuperCollider": "#46390b", "Svelte": "#ff3e00", "SVG": "#ff9900", "Swift": "#ffac45", "SystemVerilog": "#DAE1C2", "Tcl": "#e4cc98", "Terra": "#00004c", "TeX": "#3D6117", "TI Program": "#A0AA87", "Turing": "#cf142b", "Twig": "#c1d026", "TypeScript": "#2b7489", "Uno": "#9933cc", "UnrealScript": "#a54c4d", "V": "#4f87c4", "Vala": "#fbe5cd", "VBA": "#867db1", "VBScript": "#15dcdc", "VCL": "#148AA8", "Verilog": "#b2b7f8", "VHDL": "#adb2cb", "Vim script": "#199f4b", "Visual Basic .NET": "#945db7", "Volt": "#1F1F1F", "Vue": "#2c3e50", "wdl": "#42f1f4", "WebAssembly": "#04133b", "wisp": "#7582D1", "Wollok": "#a23738", "X10": "#4B6BEF", "xBase": "#403a40", "XC": "#99DA07", "XQuery": "#5232e7", "XSLT": "#EB8CEB", "Yacc": "#4B6C4B", "YAML": "#cb171e", "YARA": "#220000", "YASnippet": "#32AB90", "ZAP": "#0d665e", "ZenScript": "#00BCD1", "Zephir": "#118f9e", "Zig": "#ec915c", "ZIL": "#dc75e5" };
-                var starredRepos = JSON.parse(response.responseText);
-                starredRepos.forEach(function (starredRepo) {
-                    starredReposBlock += '<div class="py-2 my-2 border-bottom"><a class="f6 text-bold link-gray-dark d-flex no-underline wb-break-all d-inline-block" href="' + starredRepo.html_url + '">' + starredRepo.full_name + '</a><p class="f6 text-gray mb-2" itemprop="description">' + starredRepo.description + '</p>' + (starredRepo.language == null ? '' : '<span class="mr-2 f6 text-gray text-normal"><span class=""><span class="repo-language-color" style="background-color:' + languageColor[starredRepo.language] + '"></span><span itemprop="programmingLanguage"> ' + starredRepo.language + '</span></span></span>') + '<span class="f6 text-gray text-normal"><svg aria-label="star" class="octicon octicon-star" viewBox="0 0 16 16" version="1.1" width="16" height="16" role="img"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"></path></svg> ' + (starredRepo.stargazers_count > 1000 ? (starredRepo.stargazers_count / 1000).toFixed(1) + 'k' : starredRepo.stargazers_count) + '</span></div>';
-                });
-                GM_setValue('starredReposBlock', starredReposBlock);
-                GM_setValue('lastStoreStarredReposTime', Date.now());
-                rightColumn.insertAdjacentHTML('beforeend', starredReposBlock);
-            },
-            onerror: function () {
-                GM_log('[GithubDashboardEnhance]: There was a problem with the request.');
-            },
-            ontimeout: function () {
-                GM_log('[GithubDashboardEnhance]: Request timeout.');
-            },
-        });
-    } else {
-        rightColumn.insertAdjacentHTML('beforeend', GM_getValue('starredReposBlock', ''));
-    }
-}
 
-run();
+    const fetchMap = async (key, defaultMap) => {
+        const v = await GM.getValue(key)
+        if (!v) {
+            return defaultMap
+        }
+        return new Map(JSON.parse(v))
+    }
+
+    const storeMap = async (key, m) => {
+        await GM.setValue(key, JSON.stringify(Array.from(m.entries())))
+    }
+
+    const lastStoreColors = await GM.getValue('lastStoreColors', 0)
+    if (lastStoreColors + 30 * 86400000 < Date.now()) {
+        GM.xmlHttpRequest({
+            method: 'GET',
+            timeout: 5000,
+            responseType: 'json',
+            url: 'https://raw.githubusercontent.com/ozh/github-colors/master/colors.json',
+            onload: async resp => {
+                let languageColors = new Map()
+                for (const [language, v] of Object.entries(resp.response)) {
+                    languageColors.set(language, v.color)
+                }
+                await storeMap('languageColors', languageColors)
+                await GM.setValue('lastStoreColors', Date.now())
+            },
+            onerror: resp => {
+                console.log('[GithubDashboardEnhance]: request colors failed: ', resp)
+            },
+            ontimeout: () => {
+                console.log('[GithubDashboardEnhance]: Request colors timeout.')
+            },
+        })
+    }
+
+    const lastStoreStarredReposTime = await GM.getValue('lastStoreStarredReposTime', 0)
+    if (lastStoreStarredReposTime + 86400000 < Date.now()) {
+        GM.xmlHttpRequest({
+            method: 'GET',
+            timeout: 5000,
+            responseType: 'json',
+            url: `https://api.github.com/users/${userName}/starred`,
+            onload: async resp => {
+                const languageColors = await fetchMap('languageColors', new Map())
+                let starredReposBlock = '<h2 class="f5 text-bold pt-3 mt-4 border-top">Recent Starred repositories</h2><div data-view-component="true">'
+                let i = 0
+                for (const repo of resp.response) {
+                    i += 1
+                    let border = ''
+                    if (i < resp.response.length) {
+                        border = 'border-bottom'
+                    }
+                    starredReposBlock += `<div data-view-component="true" class="py-4 ${border}"> <div data-view-component="true" class="Truncate d-flex flex-justify-between"> <span style="word-wrap:normal;max-width: 300px;" data-view-component="true" class="Truncate-text ws-normal flex-1"> <img src="${repo.owner.avatar_url}" alt="@${repo.owner.login} profile" size="20" height="20" width="20" data-view-component="true" class="avatar avatar-small circle box-shadow-none mr-1"> <a href="${repo.html_url}" data-view-component="true" class="color-fg-default text-bold"> ${repo.owner.login} <span data-view-component="true" class="color-fg-muted text-light">/</span> ${repo.name} </a></span> </div> <p data-view-component="true" class="text-small color-fg-muted mt-2"> ${repo.description} </p> <div data-view-component="true" class="f6 color-fg-muted d-inline-block mr-4 mt-1"> <svg aria-label="star" role="img" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-star"> <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"> </path> </svg> ${repo.stargazers_count > 1000 ? (repo.stargazers_count / 1000).toFixed(1) + 'k' : repo.stargazers_count} </div> <div data-view-component="true" class="f6 color-fg-muted d-inline-block mt-1"> <span class=""> <span class="repo-language-color" style="background-color: ${languageColors.get(repo.language)}"></span> <span itemprop="programmingLanguage">${repo.language}</span> </span> </div> </div>`
+                }
+                starredReposBlock += `<a href="/${userName}?tab=stars" data-view-component="true">More →</a></div>`
+                await GM.setValue('starredReposBlock', starredReposBlock)
+                await GM.setValue('lastStoreStarredReposTime', Date.now())
+            },
+            onerror: resp => {
+                console.log('[GithubDashboardEnhance]: request failed: ', resp)
+            },
+            ontimeout: () => {
+                console.log('[GithubDashboardEnhance]: Request timeout.')
+            },
+        })
+    }
+    rightFooter.insertAdjacentHTML('beforebegin', await GM.getValue('starredReposBlock', ''))
+})()
